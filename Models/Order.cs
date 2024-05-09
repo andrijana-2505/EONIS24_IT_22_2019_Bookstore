@@ -9,7 +9,7 @@ public partial class Order
 
     public decimal? TotalAmount { get; set; }
 
-    public string? Status { get; set; }
+    public OrderStatus Status { get; set; }
 
     public DateOnly? OrderDate { get; set; }
 

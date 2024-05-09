@@ -122,6 +122,7 @@ public partial class PostgresContext : DbContext
                 .HasColumnName("order_date");
             entity.Property(e => e.Status)
                 .HasMaxLength(15)
+                .HasConversion<string>()
                 .HasColumnName("status");
             entity.Property(e => e.StripeTransactionId)
                 .HasMaxLength(30)
@@ -218,7 +219,8 @@ public partial class PostgresContext : DbContext
             entity.Property(e => e.UserRole)
                 .HasMaxLength(8)
                 .HasDefaultValueSql("'Customer'::character varying")
-                .HasColumnName("user_role");
+                .HasColumnName("user_role")
+                .HasConversion<string>();
             entity.Property(e => e.Username)
                 .HasMaxLength(20)
                 .HasColumnName("username");
