@@ -25,7 +25,7 @@ namespace BackendBookstore.Controllers
             _mapper = mapper;
         }
 
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public ActionResult<IEnumerable<ReviewReadDto>> GetAll(int? usersId)
         {
@@ -48,7 +48,7 @@ namespace BackendBookstore.Controllers
             return NotFound();
 
         }
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public ActionResult<ReviewReadDto> CreateReview(ReviewCreateDto review)
         {
@@ -65,7 +65,7 @@ namespace BackendBookstore.Controllers
             var reviewDto = _mapper.Map<ReviewUpdateDto>(reviewModel);
             return CreatedAtRoute(nameof(GetReviewById), new { reviewId = reviewDto.ReviewId }, reviewDto);
         }
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         [HttpPut]
         public ActionResult<ReviewReadDto> Update(ReviewUpdateDto man)
         {
@@ -86,7 +86,7 @@ namespace BackendBookstore.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, "Error updating");
             }
         }
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{reviewId}")]
         public IActionResult Delete(int reviewId)
         {

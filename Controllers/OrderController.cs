@@ -25,7 +25,7 @@ namespace BackendBookstore.Controllers
             _mapper = mapper;
         }
 
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public ActionResult<IEnumerable<OrderReadDto>> GetAll()
         {
@@ -37,7 +37,7 @@ namespace BackendBookstore.Controllers
             }
             return Ok(orderDtos);
         }
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         [HttpGet("{orderId}", Name = "GetOrderById")]
         public ActionResult<OrderReadDto> GetOrderById(int orderId)
         {
@@ -54,7 +54,7 @@ namespace BackendBookstore.Controllers
 
         }
 
-        //[Authorize(Roles = "Admin, Customer")]
+        [Authorize(Roles = "Admin, Customer")]
         [HttpPost]
         public ActionResult<OrderReadDto> CreateOrder(OrderCreateDto order)
         {
@@ -88,7 +88,7 @@ namespace BackendBookstore.Controllers
 
         }
 
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         [HttpPut]
         public ActionResult<OrderReadDto> Update(OrderUpdateDto order)
         {
@@ -110,7 +110,7 @@ namespace BackendBookstore.Controllers
             }
         }
 
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{orderId}")]
         public IActionResult Delete(int orderId)
         {

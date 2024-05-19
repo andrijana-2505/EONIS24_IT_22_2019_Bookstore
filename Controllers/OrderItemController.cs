@@ -24,7 +24,7 @@ namespace BackendBookstore.Controllers
             _mapper = mapper;
         }
 
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public ActionResult<IEnumerable<OrderItemReadDto>> GetAll(int? orderId)
         {
@@ -34,7 +34,7 @@ namespace BackendBookstore.Controllers
             return Ok(_mapper.Map<IEnumerable<OrderItemReadDto>>(items));
         }
 
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         [HttpGet("{orderItemId}", Name = "GetOrderItemById")]
         public ActionResult<OrderItemReadDto> GetOrderItemById(int orderItemId)
         {
@@ -45,7 +45,7 @@ namespace BackendBookstore.Controllers
 
         }
 
-        //[Authorize(Roles = "Admin, Customer")]
+        [Authorize(Roles = "Admin, Customer")]
         [HttpPost]
         public ActionResult<OrderItemReadDto> CreateOrderItem(OrderItemCreateDto item)
         {
@@ -63,7 +63,7 @@ namespace BackendBookstore.Controllers
             }
 
         }
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         [HttpPut]
         public ActionResult<OrderItemReadDto> Update(OrderItemUpdateDto order)
         {
@@ -84,7 +84,7 @@ namespace BackendBookstore.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, "Error updating");
             }
         }
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{orderItemId}")]
         public IActionResult Delete(int orderItemId)
         {

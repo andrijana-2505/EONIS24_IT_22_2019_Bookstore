@@ -30,7 +30,7 @@ namespace BackendBookstore.Controllers
             _mapper = mapper;
         }
 
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public ActionResult<IEnumerable<UserReadDto>> GetAll(UserRole? userRole)
         {
@@ -46,7 +46,7 @@ namespace BackendBookstore.Controllers
             }
             return Ok(usersDtos);
         }
-       // [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         [HttpGet("{usersId}", Name = "GetUserById")]
         public ActionResult<UserReadDto> GetUserById(int userId)
         {
@@ -62,7 +62,7 @@ namespace BackendBookstore.Controllers
 
         }
 
-       // [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         [HttpPut]
         public ActionResult<UserReadDto> UpdateUser(UserUpdateDto usersUpdateDto)
         {
@@ -94,7 +94,7 @@ namespace BackendBookstore.Controllers
 
         }
 
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{usersId}")]
         public IActionResult Delete(int userId)
         {
@@ -115,7 +115,7 @@ namespace BackendBookstore.Controllers
             }
         }
 
-        //[Authorize(Roles = "Admin, Customer")]
+        [Authorize(Roles = "Admin, Customer")]
         [HttpPut("my-data")]
         public ActionResult<UserReadDto> Update(UserUpdateDto user)
         {
@@ -142,7 +142,7 @@ namespace BackendBookstore.Controllers
             }
         }
 
-        //[Authorize(Roles = "Admin, Customer")]
+        [Authorize(Roles = "Admin, Customer")]
         [HttpGet("my-data")]
         public ActionResult<UserReadDto> GetMyData()
         {
@@ -159,7 +159,7 @@ namespace BackendBookstore.Controllers
 
         }
 
-        //[Authorize(Roles = "Admin, Customer")]
+        [Authorize(Roles = "Admin, Customer")]
         [HttpPatch("my-data/password")]
         public ActionResult UpdatePassword([FromBody] PasswordUpdateDto passwordUpdate)
         {
@@ -182,7 +182,7 @@ namespace BackendBookstore.Controllers
             }
         }
 
-        //[Authorize(Roles = "Admin, Customer")]
+        [Authorize(Roles = "Admin, Customer")]
         [HttpGet("orders")]
         public ActionResult<IEnumerable<OrderReadDto>> GetMyOrders(int? orderId)
         {
@@ -203,7 +203,7 @@ namespace BackendBookstore.Controllers
             return ordersDtoList;
         }
 
-       // [Authorize(Roles = "Admin, Customer")]
+        [Authorize(Roles = "Admin, Customer")]
         [HttpPost("last_order")]
         public OrderReadDto GetOrderInProgress()
         {
@@ -278,7 +278,7 @@ namespace BackendBookstore.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, "Error fetching data");
             }
         }*/
-       // [Authorize(Roles = "Admin, Customer")]
+        [Authorize(Roles = "Admin, Customer")]
         [HttpDelete("orderitems/{orderItemId}")]
         public IActionResult DeleteOrderItem(int orderItemId)
         {
