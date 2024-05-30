@@ -3,9 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using BackendBookstore.Models;
 using BackendBookstore.Repositories.Implementation;
 using BackendBookstore.Repositories.Interface;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
@@ -17,7 +15,7 @@ var builder = WebApplication.CreateBuilder(args);
 var tokenKey = builder.Configuration["AppSettings:Token"];
 var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenKey));
 
-//Add scopes
+// Add scopes
 builder.Services.AddScoped<ICategoryRepo, CategoryRepo>();
 builder.Services.AddScoped<IBookRepo, BookRepo>();
 builder.Services.AddScoped<IUserRepo, UserRepo>();
@@ -26,7 +24,7 @@ builder.Services.AddScoped<IOrderRepo, OrderRepo>();
 builder.Services.AddScoped<IOrderItemRepo, OrderItemRepo>();
 builder.Services.AddScoped<IReviewRepo, ReviewRepo>();
 
-//Add Authentication
+// Add Authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
 {
     options.TokenValidationParameters = new TokenValidationParameters
@@ -39,12 +37,12 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 });
 
 // Add services to the container.
-
 builder.Services.AddControllers();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddDbContext<PostgresContext>(options =>
-options.UseNpgsql(builder.Configuration.GetConnectionString("PostgresContext")));
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+    options.UseNpgsql(builder.Configuration.GetConnectionString("PostgresContext")));
+
+// Configure Swagger/OpenAPI
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
@@ -60,22 +58,19 @@ builder.Services.AddSwaggerGen(options =>
     options.OperationFilter<SecurityRequirementsOperationFilter>();
 });
 
-#pragma warning disable ASP0000 // Do not call 'IServiceCollection.BuildServiceProvider' in 'ConfigureServices'
-var provider = builder.Services.BuildServiceProvider();
-#pragma warning restore ASP0000 // Do not call 'IServiceCollection.BuildServiceProvider' in 'ConfigureServices'
-
-
+// Configure CORS
 builder.Services.AddCors(options =>
 {
-    var frontendUrl = provider.GetRequiredService<IConfiguration>().GetValue<string>("frontend_url");
-
-    options.AddDefaultPolicy(builder =>
+    options.AddPolicy("AllowAllOrigins", builder =>
     {
-        builder.WithOrigins(frontendUrl).AllowAnyMethod().AllowAnyHeader().AllowAnyOrigin();
-
+        builder.AllowAnyOrigin()
+               .AllowAnyMethod()
+               .AllowAnyHeader();
     });
 });
+
 StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -86,6 +81,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// Enable CORS globally
+app.UseCors("AllowAllOrigins");
 
 app.UseAuthentication();
 app.UseAuthorization();
