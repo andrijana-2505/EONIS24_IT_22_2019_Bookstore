@@ -12,8 +12,8 @@ namespace BackendBookstore.Repositories.Implementation
         }
         public void Create(Category category)
         {
-            if (category == null)
-                _context.Categories.Add(category);
+            if (category == null) throw new ArgumentNullException(nameof(category));
+            _context.Categories.Add(category);
         }
 
         public void Delete(int categoryId)

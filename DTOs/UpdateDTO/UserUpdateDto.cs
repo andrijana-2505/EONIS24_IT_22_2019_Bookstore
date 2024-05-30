@@ -10,7 +10,7 @@ namespace BackendBookstore.DTOs.UpdateDTO
 
         public string Username { get; set; } = null!;
 
-        public string PasswordLogin { get; set; } = null!;
+       // public string PasswordLogin { get; set; } = null!;
 
         public string FirstName { get; set; } = null!;
 

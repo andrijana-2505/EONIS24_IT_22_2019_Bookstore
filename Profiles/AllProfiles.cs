@@ -17,8 +17,8 @@ namespace BackendBookstore.Profiles
                 CreateMap<Address, AddressUpdateDto>();
                 CreateMap<AddressUpdateDto, Address>();
 
-                CreateMap<Book, BookUpdateDto>();
-                CreateMap<BookUpdateDto, Book>();
+                CreateMap<Book, BookCreateDto>();
+                CreateMap<BookCreateDto, Book>();
                 CreateMap<Book, BookReadDto>();
                 CreateMap<Book, Book>();
                 CreateMap<Book, BookUpdateDto>();

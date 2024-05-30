@@ -16,10 +16,7 @@ namespace BackendBookstore.Repositories.Implementation
         }
         public void Create(User user)
         {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
+            if (user == null) throw new ArgumentNullException(nameof(user));
 
             _context.Users.Add(user);
 
@@ -28,29 +25,15 @@ namespace BackendBookstore.Repositories.Implementation
         public void Delete(int userId)
         {
             var user = FindUserById(userId);
-
-            if (user != null)
-            {
-                _context.Users.Remove(user);
-            }
+            _context.Users.Remove(user);
         }
 
         public User FindByEmail(string email)
         {
             var user = _context.Users.FirstOrDefault(u => u.Email == email);
-            if (user != null)
-                return user;
-            else
-                throw new ArgumentException($"User with Email {email} not found.", nameof(email));
-        }
+           
+            return user;
 
-        public User FindByUserName(string userName)
-        {
-            var user = _context.Users.FirstOrDefault(u => u.Username == userName);
-            if (user != null)
-                return user;
-            else
-                throw new ArgumentException($"User with username {userName} not found.", nameof(userName));
         }
 
         public User FindUserById(int userId)
@@ -90,16 +73,6 @@ namespace BackendBookstore.Repositories.Implementation
             return orders;
 
         }
-        /*public IEnumerable<Address> GetAddresses(int usersId)
-        {
-            var userOrders = GetOrdersForUser(usersId);
-            var addresses = new List<Address>();
-            foreach (var userOrder in userOrders)
-            {
-                addresses.Add(_repo.FindAddressById((int)userOrder.Addressid));
-            }
-            return addresses;
-        }*/
 
         public bool SaveChanges()
         {

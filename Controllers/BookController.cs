@@ -7,6 +7,7 @@ using BackendBookstore.Models;
 using BackendBookstore.Repositories.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Data;
 using System.Xml.Linq;
 
@@ -96,47 +97,20 @@ namespace BackendBookstore.Controllers
         }
         [Authorize(Roles = "Admin")]
         [HttpPost()]
-        public async Task<ActionResult<BookReadDto>> UploadAndCreateBook([FromForm] BookCreateDto book, IFormFile file)
+        public async Task<ActionResult<BookReadDto>> CreateBook(BookCreateDto book)
         {
-            string? filePath = null;
-
+            var bookModel = _mapper.Map<Book>(book);
             try
             {
-                if (file == null || file.Length == 0)
-                {
-                    return BadRequest("No file was uploaded.");
-                }
-
-                var uploadsPath = Path.Combine(_env?.WebRootPath ?? string.Empty, "uploads");
-                if (!Directory.Exists(uploadsPath))
-                {
-                    Directory.CreateDirectory(uploadsPath);
-                }
-
-                var fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
-                filePath = Path.Combine(uploadsPath, fileName); // Assign actual file path to filePath variable
-
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                    await file.CopyToAsync(stream);
-                }
-
-                var bookModel = _mapper.Map<Book>(book);
-                //bookModel.Image = $"/uploads/{fileName}";
-
                 _repository.Create(bookModel);
                 _repository.SaveChanges();
-                var bookDto = _mapper.Map<BookUpdateDto>(bookModel);
-                return CreatedAtRoute(nameof(GetBookById), new { bookId = bookDto.BookId }, bookDto);
             }
-            catch (Exception)
+            catch (DbUpdateException)
             {
-                if (!string.IsNullOrEmpty(filePath) && System.IO.File.Exists(filePath))
-                {
-                    System.IO.File.Delete(filePath);
-                }
-                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while saving the data to the database.");
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while saving the data to the database: {ex.Message}");
             }
+            var bookDto = _mapper.Map<BookUpdateDto>(bookModel);
+            return CreatedAtRoute(nameof(GetBookById), new { bookId = bookDto.BookId }, bookDto);
         }
 
 

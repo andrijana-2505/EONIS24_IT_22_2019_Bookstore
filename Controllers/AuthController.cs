@@ -1,12 +1,19 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using AutoMapper;
 using BackendBookstore.DTOs;
 using BackendBookstore.DTOs.CreateDTO;
 using BackendBookstore.DTOs.ReadDTO;
+using BackendBookstore.DTOs.UpdateDTO;
 using BackendBookstore.Models;
 using BackendBookstore.Repositories.Interface;
+using BackendBookstore.Repositories.Implementation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -33,12 +40,13 @@ namespace BackendBookstore.Controllers
         public ActionResult<UserReadDto> Register(UserCreateDto users)
         {
             // Proveravanje da li korisnik već postoji
-            if (_repository.FindByUserName(users.Username) != null)
+            if (_repository.FindByEmail(users.Email) != null)
                 return BadRequest("User already registered!");
 
             // Mapiranje korisnika i hashovanje lozinke
             var userModel = _mapper.Map<User>(users);
-            userModel.PasswordLogin = BCrypt.Net.BCrypt.HashPassword(users.PasswordLogin);
+            string passwordHash = BCrypt.Net.BCrypt.HashPassword(users.Password);
+            userModel.PasswordLogin = passwordHash;
 
             try
             {
@@ -47,8 +55,10 @@ namespace BackendBookstore.Controllers
                 _repository.SaveChanges();
                 return Ok();
             }
-            catch (DbUpdateException)
+            catch (DbUpdateException ex)
             {
+                //return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while saving the data to the database.");
+                Console.WriteLine($"An error occurred while saving the data to the database: {ex.Message}");
                 return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while saving the data to the database.");
             }
         }
@@ -58,8 +68,8 @@ namespace BackendBookstore.Controllers
         public ActionResult<UserReadDto> Login(UserLoginDto request)
         {
             //Pretraga korisnika po username-u
-            var user = _repository.FindByUserName(request.Username);
-            if (user == null || user.Username != request.Username)
+            var user = _repository.FindByEmail(request.Email);
+            if (user == null || user.Email != request.Email)
                 return BadRequest("User not found.");
             if (!BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordLogin))
                 return BadRequest("Wrong password!");
@@ -74,21 +84,18 @@ namespace BackendBookstore.Controllers
             //Kreiranje liste claimova za token
             List<Claim> claims = new List<Claim>
             {
-                new Claim(ClaimTypes.Name, user.Username),
+                new Claim(ClaimTypes.Name, user.Email),
                 new Claim(ClaimTypes.Role, Enum.GetName(typeof(UserRole), user.UserRole))
             };
 
             //Konfiguracija za kljuc
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config.GetSection("Authentication:Schemas:Bearer:SigningKeys:0:Value").Value!));
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config.GetSection("AppSettings:Token").Value));
             var cred = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha512Signature);
-
-            //Kreiranje tokena
             var token = new JwtSecurityToken(
-                claims: claims,
-                expires: DateTime.Now.AddDays(1),
-                signingCredentials: cred
+                    claims: claims,
+                    expires: DateTime.Now.AddDays(1),
+                    signingCredentials: cred
                 );
-
             var jwt = new JwtSecurityTokenHandler().WriteToken(token);
 
             return jwt;

@@ -9,7 +9,6 @@ namespace BackendBookstore.Repositories.Interface
         void Delete(int userId);
         User FindUserById(int userId);
         User FindByEmail(string email);
-        User FindByUserName(string userName);
         IEnumerable<User> GetUsers(UserRole? userRole);
         IEnumerable<Order> GetOrdersForUser(int usersId);
         //IEnumerable<Address> GetAddresses(int usersId);

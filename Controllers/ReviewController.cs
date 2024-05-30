@@ -48,7 +48,7 @@ namespace BackendBookstore.Controllers
             return NotFound();
 
         }
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, Customer")]
         [HttpPost]
         public ActionResult<ReviewReadDto> CreateReview(ReviewCreateDto review)
         {

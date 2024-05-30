@@ -47,7 +47,7 @@ namespace BackendBookstore.Controllers
             return Ok(usersDtos);
         }
         [Authorize(Roles = "Admin")]
-        [HttpGet("{usersId}", Name = "GetUserById")]
+        [HttpGet("id/{userId}", Name = "GetUserById")]
         public ActionResult<UserReadDto> GetUserById(int userId)
         {
             User user = _repository.FindUserById(userId);
@@ -78,7 +78,6 @@ namespace BackendBookstore.Controllers
                 // Update the user entity with the new data
                 user.FirstName = usersUpdateDto.FirstName;
                 user.LastName = usersUpdateDto.LastName;
-                //user.Email = userUpdateDto.Email;
                 user.Phone = usersUpdateDto.Phone;
                 user.UserRole = (UserRole)usersUpdateDto.UserRole;
 
@@ -95,7 +94,7 @@ namespace BackendBookstore.Controllers
         }
 
         [Authorize(Roles = "Admin")]
-        [HttpDelete("{usersId}")]
+        [HttpDelete("{userId}")]
         public IActionResult Delete(int userId)
         {
             try
@@ -131,7 +130,6 @@ namespace BackendBookstore.Controllers
 
                 oldUser.FirstName = user.FirstName;
                 oldUser.LastName = user.LastName;
-                //oldUser.Email = user.Email;
                 oldUser.Phone = user.Phone;
                 _repository.SaveChanges();
                 return Ok(_mapper.Map<UserReadDto>(oldUser));
@@ -233,51 +231,7 @@ namespace BackendBookstore.Controllers
                 return _mapper.Map<OrderReadDto>(newOrder);
             }
         }
-        /*[Authorize(Roles = "Admin, Customer")]
-        [HttpPut("last_order/{ordersId}")]
-        public ActionResult<OrderReadDto> UpdateAddress(int ordersId, [FromBody] int addressId)
-        {
-            var user = _repository.FindByEmail(User?.Identity?.Name);
-            var existingOrder = _orderRepo.GetOrderInProgressForUser(user.UsersId);
-
-            if (existingOrder != null && existingOrder.OrdersId == ordersId)
-            {
-                // Update the shipping information ID for the order
-                existingOrder.AddressId = addressId;
-                _orderRepo.SaveChanges();
-
-                // Return the updated order
-                var updatedOrder = _mapper.Map<OrderReadDto>(existingOrder);
-                updatedOrder.Orderitems = _mapper.Map<IEnumerable<OrderItemUpdateDto>>(
-                    _orderRepo.GetOrderItemsForOrder(updatedOrder.OrdersId)).ToList();
-                return updatedOrder;
-            }
-            else
-            {
-                return NotFound("Order not found or does not belong to the user's existing order.");
-            }
-        }*/
-
-
-        /*[Authorize(Roles = "Admin, Customer")]
-        [HttpGet("address")]
-        public ActionResult<IEnumerable<AddressReadDto>> GetMyAdress()
-        {
-            try
-            {
-                var user = _repository.FindByEmail(User?.Identity?.Name);
-                var addressDto = _mapper.Map<IEnumerable<AddressReadDto>>(_repository.GetAddresses(user.UsersId)).ToList();
-                foreach (var address in addressDto)
-                {
-                    address.Orders = _mapper.Map<IEnumerable<OrderUpdateDto>>(_addressRepo.GetOrdersForAddress(address.AddressId)).ToList();
-                }
-                return addressDto;
-            }
-            catch (Exception)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Error fetching data");
-            }
-        }*/
+        
         [Authorize(Roles = "Admin, Customer")]
         [HttpDelete("orderitems/{orderItemId}")]
         public IActionResult DeleteOrderItem(int orderItemId)
