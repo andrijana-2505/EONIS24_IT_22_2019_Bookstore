@@ -12,7 +12,7 @@ namespace BackendBookstore.DTOs.ReadDTO
 
         public string PostalCode { get; set; } = null!;
         public int? OrdersId { get; set; }
-        public virtual ICollection<OrderUpdateDto> Orders { get; set; } = new List<OrderUpdateDto>();
+        public virtual ICollection<OrderReadDto> Orders { get; set; } = new List<OrderReadDto>();
 
 
     }

@@ -50,10 +50,6 @@ namespace BackendBookstore.Repositories.Implementation
         { 
             return (_context.SaveChanges() >= 0);
         }
-        /*public IEnumerable<Order> GetOrdersForAddress(int addressId)
-        {
-            return _context.Orders.Where(a => a.AddressId == addressId).ToList();
-        }*/
 
     }
 }
