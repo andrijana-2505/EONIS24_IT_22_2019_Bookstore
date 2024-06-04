@@ -77,7 +77,7 @@ public partial class PostgresContext : DbContext
                 .HasMaxLength(50)
                 .HasColumnName("book_author");
             entity.Property(e => e.BookPrice)
-                .HasPrecision(5, 2)
+                .HasPrecision(10, 2)
                 .HasColumnName("book_price");
             entity.Property(e => e.BookTitle)
                 .HasMaxLength(50)
