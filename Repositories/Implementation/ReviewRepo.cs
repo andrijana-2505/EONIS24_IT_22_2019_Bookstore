@@ -1,5 +1,6 @@
 ﻿using BackendBookstore.Models;
 using BackendBookstore.Repositories.Interface;
+using Microsoft.EntityFrameworkCore;
 
 namespace BackendBookstore.Repositories.Implementation
 {
@@ -41,20 +42,38 @@ namespace BackendBookstore.Repositories.Implementation
                 throw new ArgumentException($"Review with ID {reviewId} not found.", nameof(reviewId));
         }
 
-        /*public IEnumerable<Book> GetBookForReview(int reviewId)
+        public IEnumerable<Book> GetBookForReview(int reviewId)
         {
-            return _context.Books.Where(r => r.re)
-        }*/
+            var review = _context.Reviews
+                .Include(r => r.Book)  // Ovo uključuje povezanu knjigu
+                .FirstOrDefault(r => r.ReviewId == reviewId);
+
+            if (review?.Book != null)
+            {
+                return new List<Book> { review.Book };
+            }
+
+            return new List<Book>();  // Vratite praznu listu ako recenzija ili knjiga ne postoji
+        }
 
         public IEnumerable<Review> GetReviews(int? usersId)
         {
             return _context.Reviews.Where(u => (usersId == null || u.UsersId == usersId));
         }
 
-        /*public IEnumerable<Users> GetUserForReview(int reviewId)
+        public IEnumerable<User> GetUserForReview(int reviewId)
         {
-            throw new NotImplementedException();
-        }*/
+            var review = _context.Reviews
+                .Include(r => r.Users)  // Ovo uključuje povezanu knjigu
+                .FirstOrDefault(r => r.ReviewId == reviewId);
+
+            if (review?.Users != null)
+            {
+                return new List<User> { review.Users };
+            }
+
+            return new List<User>();  // Vratite praznu listu ako recenzija ili knjiga ne postoji
+        }
 
         public bool SaveChanges()
         {

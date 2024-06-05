@@ -11,7 +11,6 @@ namespace BackendBookstore.Repositories.Interface
         User FindByEmail(string email);
         IEnumerable<User> GetUsers(UserRole? userRole);
         IEnumerable<Order> GetOrdersForUser(int usersId);
-        //IEnumerable<Address> GetAddresses(int usersId);
         IEnumerable<Review> GetReviewsForUser(int usersId);
         bool SaveChanges();
     }

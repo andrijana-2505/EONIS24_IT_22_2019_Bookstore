@@ -1,5 +1,6 @@
 ﻿using BackendBookstore.Models;
 using BackendBookstore.Repositories.Interface;
+using Microsoft.EntityFrameworkCore;
 
 namespace BackendBookstore.Repositories.Implementation
 {
@@ -51,5 +52,12 @@ namespace BackendBookstore.Repositories.Implementation
             return (_context.SaveChanges() >= 0);
         }
 
+        public IEnumerable<Order> GetOrdersForAddress(int addressId)
+        {
+            return _context.Orders
+                           .Include(o => o.Addresses)
+                           .Where(o => o.Addresses.Any(a => a.AddressId == addressId))
+                           .ToList();
+        }
     }
 }

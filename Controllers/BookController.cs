@@ -50,10 +50,8 @@ namespace BackendBookstore.Controllers
 
             foreach (var bookDto in bookDtos)
             {
-                var book = _repository.FindBookById(bookDto.BookId);
-
-                var orderDto = _mapper.Map<IEnumerable<OrderItemUpdateDto>>(book.Orderitems);
-                bookDto.Orderitems = orderDto.ToList();
+                bookDto.Orderitems = _mapper.Map<IEnumerable<OrderItemUpdateDto>>(_repository.GetOrderItemsForBook(bookDto.BookId)).ToList();
+                bookDto.Reviews = _mapper.Map<IEnumerable<ReviewUpdateDto>>(_repository.GetReviewsForBook(bookDto.BookId)).ToList();
             }
             var response = new BookResponseDto
             {

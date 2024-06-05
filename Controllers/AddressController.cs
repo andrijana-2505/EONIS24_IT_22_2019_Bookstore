@@ -17,13 +17,11 @@ namespace BackendBookstore.Controllers
     {
         private readonly IMapper _mapper;
         private readonly IAddressRepo _repository;
-        private readonly PostgresContext _context;
 
-        public AddressController(IMapper mapper, IAddressRepo repository, PostgresContext context)
+        public AddressController(IMapper mapper, IAddressRepo repository)
         {
             _mapper = mapper;
-            _repository = repository;
-            _context = context; 
+            _repository = repository; 
         }
         [Authorize(Roles = "Admin")]
         [HttpGet]
@@ -36,9 +34,7 @@ namespace BackendBookstore.Controllers
             var addressDtos = _mapper.Map<IEnumerable<AddressReadDto>>(addresses);
             foreach (var addressDto in addressDtos)
             {
-                var address = _repository.FindAddressById(addressDto.AddressId);
-                var orderDto = _mapper.Map<IEnumerable<OrderReadDto>>(address.Orders);
-                addressDto.Orders = orderDto.ToList();
+                addressDto.Orders = _mapper.Map<IEnumerable<OrderUpdateDto>>(_repository.GetOrdersForAddress(addressDto.AddressId)).ToList();
             }
             return Ok(addressDtos);
         }
@@ -50,9 +46,8 @@ namespace BackendBookstore.Controllers
             Address address = _repository.FindAddressById(addressId);
             if (address != null)
             {
-                var order = _mapper.Map<IEnumerable<OrderReadDto>>(address.Orders);
                 var addressDto = _mapper.Map<AddressReadDto>(address);
-                addressDto.Orders = order.ToList();
+                addressDto.Orders = _mapper.Map<IEnumerable<OrderUpdateDto>>(_repository.GetOrdersForAddress(addressDto.AddressId)).ToList();
                 return Ok(addressDto);
             }
 

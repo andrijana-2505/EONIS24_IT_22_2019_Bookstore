@@ -10,7 +10,7 @@ namespace BackendBookstore.Repositories.Interface
         Address FindAddressById(int addressId);
         IEnumerable<Address> GetAddresses();
         bool SaveChanges();
-        //IEnumerable<Order> GetOrdersForAddress(int addressId);
+        IEnumerable<Order> GetOrdersForAddress(int addressId);
 
 
     }

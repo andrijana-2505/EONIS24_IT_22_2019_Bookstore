@@ -9,6 +9,8 @@ namespace BackendBookstore.Repositories.Interface
         Review FindReviewById(int reviewId);
         IEnumerable<Review> GetReviews(int? usersId);
         bool SaveChanges();
+        IEnumerable<User> GetUserForReview(int reviewId);
+        IEnumerable<Book> GetBookForReview(int reviewId);
 
     }
 }

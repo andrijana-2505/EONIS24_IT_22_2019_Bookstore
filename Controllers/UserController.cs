@@ -40,9 +40,8 @@ namespace BackendBookstore.Controllers
             var usersDtos = _mapper.Map<IEnumerable<UserReadDto>>(users);
             foreach (var user in usersDtos)
             {
-                var u = _repository.FindUserById(user.UsersId);
-                var orderDto = _mapper.Map<IEnumerable<OrderUpdateDto>>(u.Orders);
-                user.Orders = orderDto.ToList();
+                user.Orders = _mapper.Map<IEnumerable<OrderUpdateDto>>(_repository.GetOrdersForUser(user.UsersId)).ToList();
+                user.Reviews = _mapper.Map<IEnumerable<ReviewUpdateDto>>(_repository.GetReviewsForUser(user.UsersId)).ToList();
             }
             return Ok(usersDtos);
         }

@@ -31,7 +31,14 @@ namespace BackendBookstore.Controllers
             var items = _repository.GetOrderItems(orderId);
             if (items == null || !items.Any())
                 return NoContent();
-            return Ok(_mapper.Map<IEnumerable<OrderItemReadDto>>(items));
+            var itemsDtos = _mapper.Map<IEnumerable<OrderItemReadDto>>(items);
+            foreach(var item in itemsDtos)
+            {
+                item.Orders = _mapper.Map<IEnumerable<OrderUpdateDto>>(_repository.GetOrderForOrderItem(item.OrderItemId)).ToList();
+                item.Books = _mapper.Map<IEnumerable<BookUpdateDto>>(_repository.GetBookForOrderItem(item.OrderItemId)).ToList();
+
+            }
+            return Ok(itemsDtos);
         }
 
         [Authorize(Roles = "Admin")]

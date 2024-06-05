@@ -69,32 +69,45 @@ namespace BackendBookstore.Controllers
 
         }
 
-        const string endpointSecret = "whsec_52d86b9bfda5829f14b54e6bf350238e9ace1b4228f58c2dfcf7912e24425d73";
+        //const string endpointSecret = "whsec_1bd4aeca98addcd21535b54b23240342a5fa23491a109e2fbcbac3b3c32890c3";
 
         [HttpPost]
         [Route("webhook")]
         public async Task<IActionResult> Index()
         {
             var json = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();
+            var endpointSecret = "whsec_1bd4aeca98addcd21535b54b23240342a5fa23491a109e2fbcbac3b3c32890c3";
+            var signatureHeader = Request.Headers["Stripe-Signature"];
+
+            // Log the Stripe-Signature header
+            Console.WriteLine($"Stripe-Signature: {signatureHeader}");
+
+            
             try
             {
-                var stripeEvent = EventUtility.ConstructEvent(json,
-                    Request.Headers["Stripe-Signature"], endpointSecret);
+                var stripeEvent = EventUtility.ConstructEvent(json, signatureHeader, endpointSecret);
+                
+                Console.WriteLine("Received webhook event");
+                Console.WriteLine("Webhook event verified: " + stripeEvent.Type);
 
-                Console.WriteLine("webhook verified");
                 // Handle the event
                 if (stripeEvent.Type == Events.CheckoutSessionCompleted)
                 {
                     var session = (Stripe.Checkout.Session)stripeEvent.Data.Object;
+                    Console.WriteLine("Checkout session completed: " + session.Id);
 
                     // Access metadata
                     int orderId = int.Parse(session.Metadata["OrderId"]);
+                    Console.WriteLine($"Order ID: {orderId}");
 
-                    Address addressModel = new Address();
+                    Address addressModel = new Address
+                    {
+                        Street = session.Metadata["Street"],
+                        City = session.Metadata["City"],
+                        PostalCode = session.Metadata["PostalCode"]
+                    };
+                    Console.WriteLine($"Address: {addressModel.Street}, {addressModel.City}, {addressModel.PostalCode}");
 
-                    addressModel.Street = session.Metadata["Street"];
-                    addressModel.City = session.Metadata["City"];
-                    addressModel.PostalCode = session.Metadata["PostalCode"];
                     var addressId = 0;
                     try
                     {
@@ -102,11 +115,11 @@ namespace BackendBookstore.Controllers
                         _address.SaveChanges();
 
                         addressId = addressModel.AddressId;
-
+                        Console.WriteLine($"Address ID: {addressId}");
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine(ex);
+                        Console.WriteLine($"Error creating address: {ex}");
                     }
 
                     var oldOrder = _orderRepo.FindOrderById(orderId);
@@ -120,35 +133,34 @@ namespace BackendBookstore.Controllers
 
                     try
                     {
-
-                        Order uplata = new Order();
-                        uplata.OrdersId = orderId;
-                        uplata.StripeTransactionId = session.PaymentIntentId;
-                        uplata.TotalAmount = session.AmountTotal / 100;
+                        Order uplata = new Order
+                        {
+                            OrdersId = orderId,
+                            StripeTransactionId = session.PaymentIntentId,
+                            TotalAmount = session.AmountTotal / 100
+                        };
 
                         _orderRepo.Create(uplata);
                         _orderRepo.SaveChanges();
+                        Console.WriteLine("Order updated and saved successfully.");
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine(ex);
+                        Console.WriteLine($"Error updating order: {ex}");
                     }
 
-
-
                     return Ok();
-
                 }
                 else
                 {
-                    Console.WriteLine("Unhandled event type: {0}", stripeEvent.Type);
+                    Console.WriteLine($"Unhandled event type: {stripeEvent.Type}");
                 }
 
                 return Ok();
             }
             catch (StripeException e)
             {
-                Console.WriteLine("webhook not working");
+                Console.WriteLine($"Stripe exception: {e}");
                 return BadRequest();
             }
         }

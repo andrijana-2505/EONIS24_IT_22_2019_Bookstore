@@ -10,5 +10,8 @@ namespace BackendBookstore.Repositories.Interface
         Orderitem FindOrderItemById(int orderitemId);
         IEnumerable<Orderitem> GetOrderItems(int? ordersId);
         bool SaveChanges();
+
+        IEnumerable<Book> GetBookForOrderItem(int orderitemId);
+        IEnumerable<Order> GetOrderForOrderItem(int orderitemId);
     }
 }

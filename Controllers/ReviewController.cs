@@ -28,12 +28,17 @@ namespace BackendBookstore.Controllers
         [Authorize(Roles = "Admin")]
         [HttpGet]
         public ActionResult<IEnumerable<ReviewReadDto>> GetAll(int? usersId)
-        {
+        { 
 
-            var reviews = _repository.GetReviews(usersId);
-            if (reviews == null || !reviews.Any())
-                return NoContent();
-            return Ok(_mapper.Map<IEnumerable<ReviewReadDto>>(reviews));
+            var reviewDtos = _mapper.Map<IEnumerable<ReviewReadDto>>(_repository.GetReviews(usersId));
+            foreach (var reviewDto in reviewDtos)
+            {
+                reviewDto.Users = _mapper.Map<IEnumerable<UserUpdateDto>>
+                     (_repository.GetUserForReview(reviewDto.ReviewId)).ToList();
+                reviewDto.Books = _mapper.Map<IEnumerable<BookUpdateDto>>
+                    (_repository.GetBookForReview(reviewDto.ReviewId)).ToList();
+            }
+            return Ok(reviewDtos);
 
         }
         [AllowAnonymous]

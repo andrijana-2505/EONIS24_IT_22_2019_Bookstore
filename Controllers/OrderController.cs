@@ -34,6 +34,8 @@ namespace BackendBookstore.Controllers
             {
                 orderDto.Orderitems = _mapper.Map<IEnumerable<OrderItemUpdateDto>>
                      (_repository.GetOrderItemsForOrder(orderDto.OrdersId)).ToList();
+                orderDto.Addresses = _mapper.Map<IEnumerable<AddressUpdateDto>>
+                    (_repository.GetAddressForOrder(orderDto.OrdersId)).ToList();
             }
             return Ok(orderDtos);
         }
