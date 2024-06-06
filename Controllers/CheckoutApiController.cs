@@ -69,8 +69,6 @@ namespace BackendBookstore.Controllers
 
         }
 
-        //const string endpointSecret = "whsec_1bd4aeca98addcd21535b54b23240342a5fa23491a109e2fbcbac3b3c32890c3";
-
         [HttpPost]
         [Route("webhook")]
         public async Task<IActionResult> Index()
@@ -96,60 +94,6 @@ namespace BackendBookstore.Controllers
                     var session = (Stripe.Checkout.Session)stripeEvent.Data.Object;
                     Console.WriteLine("Checkout session completed: " + session.Id);
 
-                   /* // Access metadata
-                    int orderId = 2;//int.Parse(session.Metadata["OrderId"]);
-                    Console.WriteLine($"Order ID: {orderId}");
-
-                    Address addressModel = new Address
-                    {
-                        Street = session.Metadata["Street"],
-                        City = session.Metadata["City"],
-                        PostalCode = session.Metadata["PostalCode"]
-                    };
-                    Console.WriteLine($"Address: {addressModel.Street}, {addressModel.City}, {addressModel.PostalCode}");
-
-                    var addressId = 0;
-                    try
-                    {
-                        _address.Create(addressModel);
-                        _address.SaveChanges();
-
-                        addressId = addressModel.AddressId;
-                        Console.WriteLine($"Address ID: {addressId}");
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine($"Error creating address: {ex}");
-                    }
-
-                    var oldOrder = _orderRepo.FindOrderById(orderId);
-                    if (oldOrder == null)
-                    {
-                        return NotFound();
-                    }
-                    oldOrder.Status = OrderStatus.Obrada;
-                    //oldOrder.AddressId = addressId;
-                    _orderRepo.SaveChanges();
-
-                    try
-                    {
-                        Order uplata = new Order
-                        {
-                            OrdersId = orderId,
-                            StripeTransactionId = session.PaymentIntentId,
-                            TotalAmount = session.AmountTotal / 100
-                        };
-
-                        _orderRepo.Create(uplata);
-                        _orderRepo.SaveChanges();
-                        Console.WriteLine("Order updated and saved successfully.");
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine($"Error updating order: {ex}");
-                    }
-
-                    return Ok();*/
                 }
                 else
                 {
