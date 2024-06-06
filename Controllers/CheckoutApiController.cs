@@ -96,8 +96,8 @@ namespace BackendBookstore.Controllers
                     var session = (Stripe.Checkout.Session)stripeEvent.Data.Object;
                     Console.WriteLine("Checkout session completed: " + session.Id);
 
-                    // Access metadata
-                    int orderId = int.Parse(session.Metadata["OrderId"]);
+                   /* // Access metadata
+                    int orderId = 2;//int.Parse(session.Metadata["OrderId"]);
                     Console.WriteLine($"Order ID: {orderId}");
 
                     Address addressModel = new Address
@@ -149,7 +149,7 @@ namespace BackendBookstore.Controllers
                         Console.WriteLine($"Error updating order: {ex}");
                     }
 
-                    return Ok();
+                    return Ok();*/
                 }
                 else
                 {
