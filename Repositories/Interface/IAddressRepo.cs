@@ -12,6 +12,7 @@ namespace BackendBookstore.Repositories.Interface
         bool SaveChanges();
         IEnumerable<Order> GetOrdersForAddress(int addressId);
 
+        Address FindOrCreateAddress(string street, string city, string postalCode);
 
     }
 }

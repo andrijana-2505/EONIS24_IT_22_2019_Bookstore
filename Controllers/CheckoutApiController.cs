@@ -1,5 +1,6 @@
 ﻿using BackendBookstore.DTOs;
 using BackendBookstore.Models;
+using BackendBookstore.Repositories.Implementation;
 using BackendBookstore.Repositories.Interface;
 using Microsoft.AspNetCore.Mvc;
 using Stripe;
@@ -66,7 +67,7 @@ namespace BackendBookstore.Controllers
 
             Session session = service.Create(options);
 
-            return Ok(session.Url);
+            return Ok(new {id = session.Id});
 
         }
 
@@ -95,6 +96,25 @@ namespace BackendBookstore.Controllers
                     var session = (Stripe.Checkout.Session)stripeEvent.Data.Object;
                     Console.WriteLine("Checkout session completed: " + session.Id);
 
+                    // Dobavljanje potrebnih informacija iz sesije
+                    int orderId = int.Parse(session.Metadata["OrderId"]);
+                    string address = session.Metadata["Address"];
+                    string city = session.Metadata["City"];
+                    string postalCode = session.Metadata["PostalCode"];
+
+                    var existingAddress = _address.FindOrCreateAddress(address, city, postalCode);
+
+                    var order = _orderRepo.FindOrderById(orderId);
+                    if (order == null)
+                    {
+                        return NotFound();
+                    }
+                    order.Addresses.Add(existingAddress);
+
+                    order.StripeTransactionId = session.PaymentIntentId;
+                    _orderRepo.SaveChanges();
+
+                    return Ok();
                 }
                 else
                 {
