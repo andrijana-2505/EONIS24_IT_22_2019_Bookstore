@@ -39,7 +39,7 @@ namespace BackendBookstore.Controllers
                 {
                     PriceData = new SessionLineItemPriceDataOptions
                     {
-                        UnitAmount = item.UnitAmount,
+                        UnitAmount = item.UnitAmount * 100,
                         Currency = "rsd",
                         ProductData = new SessionLineItemPriceDataProductDataOptions
                         {
@@ -52,6 +52,7 @@ namespace BackendBookstore.Controllers
                 Mode = "payment",
                 SuccessUrl = _config["frontend_url"] + "/success",
                 CancelUrl = _config["frontend_url"] + "/cart",
+
                 Metadata = new Dictionary<string, string> // Add metadata here
                 {
                     { "OrderId", orderId.ToString() },
