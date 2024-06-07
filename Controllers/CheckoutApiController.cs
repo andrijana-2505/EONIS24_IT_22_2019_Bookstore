@@ -70,13 +70,13 @@ namespace BackendBookstore.Controllers
             return Ok(new {id = session.Id});
 
         }
-
+        const string endpointSecret = "whsec_1bd4aeca98addcd21535b54b23240342a5fa23491a109e2fbcbac3b3c32890c3";
         [HttpPost]
         [Route("webhook")]
         public async Task<IActionResult> Index()
         {
             var json = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();
-            var endpointSecret = "whsec_1bd4aeca98addcd21535b54b23240342a5fa23491a109e2fbcbac3b3c32890c3";
+           
             var signatureHeader = Request.Headers["Stripe-Signature"];
 
             // Log the Stripe-Signature header
@@ -98,22 +98,50 @@ namespace BackendBookstore.Controllers
 
                     // Dobavljanje potrebnih informacija iz sesije
                     int orderId = int.Parse(session.Metadata["OrderId"]);
-                    string address = session.Metadata["Address"];
-                    string city = session.Metadata["City"];
-                    string postalCode = session.Metadata["PostalCode"];
 
-                    var existingAddress = _address.FindOrCreateAddress(address, city, postalCode);
+                    Address addressModel = new Address();
+
+                    addressModel.Street = session.Metadata["Street"];
+                    addressModel.City = session.Metadata["City"];
+                    addressModel.PostalCode = session.Metadata["PostalCode"];
+
+                    var addressId = 0;
+                    try
+                    {
+                        _address.Create(addressModel);
+                        _address.SaveChanges();
+
+                        addressId = addressModel.AddressId;
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex);
+                    }
+
+                    //var existingAddress = _address.FindOrCreateAddress(address, city, postalCode);
 
                     var order = _orderRepo.FindOrderById(orderId);
                     if (order == null)
                     {
                         return NotFound();
                     }
-                    order.Addresses.Add(existingAddress);
+                    //order.Addresses.Add(existingAddress);
+                    order.Status = OrderStatus.Obrada;
+                    //_orderRepo.SaveChanges();
+                    try
+                    {
+                        Order uplata = new Order();
+                        uplata.OrdersId = orderId;
+                        uplata.StripeTransactionId = session.PaymentIntentId;
+                        uplata.TotalAmount = session.AmountTotal / 100;
 
-                    order.StripeTransactionId = session.PaymentIntentId;
-                    _orderRepo.SaveChanges();
-
+                        _orderRepo.Create(uplata);
+                        _orderRepo.SaveChanges();
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex);
+                    }
                     return Ok();
                 }
                 else
