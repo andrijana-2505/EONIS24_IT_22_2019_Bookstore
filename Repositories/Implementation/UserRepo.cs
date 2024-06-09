@@ -1,18 +1,17 @@
 ﻿using BackendBookstore.Models;
 using BackendBookstore.Repositories.Interface;
+using Microsoft.EntityFrameworkCore;
 
 namespace BackendBookstore.Repositories.Implementation
 {
     public class UserRepo : IUserRepo
     {
         private readonly PostgresContext _context;
-        private readonly IAddressRepo _repo;
 
 
-        public UserRepo(PostgresContext context, IAddressRepo repo)
+        public UserRepo(PostgresContext context)
         {
             _context = context;
-            _repo = repo;
         }
         public void Create(User user)
         {
@@ -38,7 +37,10 @@ namespace BackendBookstore.Repositories.Implementation
 
         public User FindUserById(int userId)
         {
-            var user = _context.Users.FirstOrDefault(u => u.UsersId == userId);
+            var user = _context.Users
+        .Include(u => u.Orders)
+        .Include(u => u.Reviews)
+        .FirstOrDefault(u => u.UsersId == userId);
             if (user != null)
                 return user;
             else

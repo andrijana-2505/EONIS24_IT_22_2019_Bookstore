@@ -39,7 +39,7 @@ namespace BackendBookstore.Repositories.Implementation
 
         public void Update(Address address)
         {
-
+            //no need for implementation
         }
 
         public IEnumerable<Address> GetAddresses()
@@ -58,30 +58,6 @@ namespace BackendBookstore.Repositories.Implementation
                            .Include(o => o.Addresses)
                            .Where(o => o.Addresses.Any(a => a.AddressId == addressId))
                            .ToList();
-        }
-
-        public Address FindOrCreateAddress(string street, string city, string postalCode)
-        {
-            var existingAddress = _context.Addresses.FirstOrDefault(a => a.Street == street && a.City == city && a.PostalCode == postalCode);
-
-            if (existingAddress != null)
-            {
-                return existingAddress;
-            }
-            else
-            {
-                var newAddress = new Address
-                {
-                    Street = street,
-                    City = city,
-                    PostalCode = postalCode
-                };
-
-                _context.Addresses.Add(newAddress);
-                _context.SaveChanges();
-
-                return newAddress;
-            }
         }
     }
 }
