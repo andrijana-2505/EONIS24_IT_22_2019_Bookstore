@@ -1,0 +1,142 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+
+:root {
+  --component-margin: 2rem 5rem;
+  --primary-color: #fcf6e8;
+  --secondary-color: #4e342e;
+  --text-link-color: #6b8e23;
+  --button-color-rose: #d3a297;
+  --book-color-rose: #d3a297;
+}
+
+* {
+  font-family: 'Inter', sans-serif;
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--primary-color);
+}
+
+.admin-dashboard {
+  display: flex;
+  height: 100%;
+  min-height: 100vh;
+  font-family: Arial, sans-serif;
+}
+
+.admin-dashboard__sidebar {
+  width: 20%;
+  background-color: #2c3e50;
+  padding: 20px;
+  color: #ecf0f1;
+}
+
+.admin-dashboard__sidebar h1 {
+  font-size: 1.5em;
+  margin-bottom: 20px;
+}
+
+.admin-dashboard__sidebar a {
+  display: block;
+  color: #ecf0f1;
+  text-decoration: none;
+  margin-bottom: 10px;
+  padding: 10px;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.admin-dashboard__sidebar a:hover {
+  background-color: #34495e;
+}
+
+.admin-dashboard__content {
+  width: 80%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background-color: #ecf0f1;
+}
+
+.admin-dashboard__content h2 {
+  font-size: 2em;
+  margin-bottom: 20px;
+}
+
+.admin-dashboard__content p {
+  font-size: 1.2em;
+  line-height: 1.6;
+}
+
+.admin-operations {
+  padding: 2rem;
+  width: 100%;
+  margin: auto;
+  font-family: Arial, sans-serif;
+}
+
+.admin-operations h1 {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.admin-operations__form-container {
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.admin-operations__form-container h3 {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.admin-operations__form-container__form {
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-operations__form-container__form input,
+.admin-operations__form-container__form select,
+.admin-operations__form-container__form button,
+.admin-operations__form-container__form textarea {
+  width: 100%;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.admin-operations__form-container__form input:focus,
+.admin-operations__form-container__form select:focus,
+.admin-operations__form-container__form button:focus,
+.admin-operations__form-container__form textarea:focus {
+  outline: none;
+  border-color: #007bff;
+}
+
+.admin-operations__form-container__form button {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.admin-operations__form-container__form button:hover {
+  background-color: #0056b3;
+}
+
+.admin-operations__form-container__form button:disabled {
+  background-color: #ddd;
+  cursor: not-allowed;
+}

@@ -1,0 +1,36 @@
+.book-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.book-container-data {
+  padding: 2rem;
+  height: 250px;
+  background-color: var(--book-color-rose);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  cursor: pointer;
+  color: var(--primary-color);
+}
+
+.book-container-data h2 {
+  margin-bottom: 1rem;
+}
+
+.book-container-data p {
+  margin-bottom: 0.5rem;
+}
+
+.book-container-cart-btn {
+  margin: 1rem 0;
+  padding: 0.5rem;
+  cursor: pointer;
+  background-color: var(--button-color-rose);
+  color: white;
+  border-radius: 10px;
+}
