@@ -20,7 +20,7 @@ export const CartProvider = ({ children }: React.PropsWithChildren) => {
 
   const removeCartItem = (id: number) => {
     setCartItems((prevItems) =>
-      prevItems.filter((item) => item.book.bookId === id)
+      prevItems.filter((item) => item.id !== id)
     );
   };
 

@@ -8,6 +8,8 @@ import {CartItem} from '../../model/CartItem';
 import './BookDetails.css';
 import Review from '../../model/Review';
 import BookReview from "../../components/book-review/BookReview.tsx";
+import { v4 as uuidv4 } from 'uuid';
+
 
 // TODO backend issue -> not getting reviews
 const BookDetails = () => {
@@ -49,8 +51,10 @@ const BookDetails = () => {
             navigate('/login')
             return;
         }
-        if (bookData !== null && quantity > 0 ) {
+        if (bookData !== null && quantity > 0) {
             const cartItem: CartItem = {
+
+                id: uuidv4(),
                 book: bookData,
                 quantity: quantity,
             };

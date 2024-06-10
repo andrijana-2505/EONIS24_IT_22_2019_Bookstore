@@ -6,7 +6,7 @@ import './Cart.css';
 import React, {useState} from "react";
 
 const Cart = () => {
-    const {cartItems} = useCart();
+    const {cartItems, removeCartItem} = useCart();
     console.log(cartItems);
 
     const [street, setStreet] = useState('')
@@ -87,23 +87,16 @@ const Cart = () => {
     return (
         <div className='cart'>
             {cartItems && cartItems.length > 0 ? (
-                cartItems.map((cartItem, index) => (
+                cartItems.map((cartItem) => (
                     <>
 
-                        <div key={index} className='cart__cart-item'>
+                        <div key={cartItem.id} className='cart__cart-item'>
                             <div>
                                 <h3>{cartItem.book.bookTitle}</h3>
                                 <div>Price: ${cartItem.book.bookPrice}</div>
                                 <div>Quantity: {cartItem.quantity}</div>
+                                <button onClick={() => removeCartItem(cartItem.id)}>Remove</button>
                             </div>
-                        </div>
-                        <div className='cart__address-fields'>
-                            <form className='cart__adress-fields-form'>
-                                <input type="text" name="" id="" placeholder='Street' onChange={handleStreetChange}/>
-                                <input type="text" name="" id="" placeholder='Postal code'
-                                       onChange={handlePostalCodeChange}/>
-                                <input type="text" name="" id="" placeholder='City' onChange={handleCityChange}/>
-                            </form>
                         </div>
                     </>
                 ))
@@ -111,6 +104,14 @@ const Cart = () => {
                 <h1>No items in cart</h1>
             )}
 
+            <div className='cart__address-fields'>
+                <form className='cart__adress-fields-form'>
+                    <input type="text" name="" id="" placeholder='Street' onChange={handleStreetChange}/>
+                    <input type="text" name="" id="" placeholder='Postal code'
+                           onChange={handlePostalCodeChange}/>
+                    <input type="text" name="" id="" placeholder='City' onChange={handleCityChange}/>
+                </form>
+            </div>
             <div className='cart__total-price'>Total Price: ${totalPrice}</div>
             <button disabled={cartItems.length === 0} onClick={handleCheckout}>
                 CONTINUE
