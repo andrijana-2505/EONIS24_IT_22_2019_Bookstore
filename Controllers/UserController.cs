@@ -146,7 +146,18 @@ namespace BackendBookstore.Controllers
             try
             {
                 User user = _repository.FindByEmail(User?.Identity?.Name);
-                return Ok(_mapper.Map<UserReadDto>(user));
+                if (user != null)
+                {
+                    var orders = _repository.GetOrdersForUser(user.UsersId);
+                    var reviews = _repository.GetReviewsForUser(user.UsersId);
+
+                    var userDto = _mapper.Map<UserReadDto>(user);
+                    userDto.Orders = _mapper.Map<IEnumerable<OrderUpdateDto>>(orders).ToList();
+                    userDto.Reviews = _mapper.Map<IEnumerable<ReviewUpdateDto>>(reviews).ToList();
+
+                    return Ok(userDto);
+                }
+                return NotFound();
 
             }
             catch (Exception)
@@ -255,5 +266,26 @@ namespace BackendBookstore.Controllers
 
             return NoContent();
         }
+
+        [Authorize(Roles = "Admin, Customer")]
+        [HttpGet("findByEmail")]
+        public IActionResult FindByEmail([FromQuery] string email)
+        {
+            if (string.IsNullOrEmpty(email))
+            {
+                return BadRequest("Email is required");
+            }
+
+            // Pronalaženje korisnika po email adresi
+            var user = _repository.FindByEmail(email);
+
+            if (user == null)
+            {
+                return NotFound($"Korisnik nije pronađen za datu email adresu: {email}");
+            }
+
+            return Ok(user);
+        }
+
     }
 }

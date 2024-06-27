@@ -5,7 +5,15 @@ using BackendBookstore.Repositories.Interface;
 using Microsoft.AspNetCore.Mvc;
 using Stripe;
 using Stripe.Checkout;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using Address = BackendBookstore.Models.Address;
+using Newtonsoft.Json;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BackendBookstore.Controllers
 {
@@ -14,29 +22,38 @@ namespace BackendBookstore.Controllers
     {
         private readonly IOrderRepo _orderRepo;
         private readonly IConfiguration _config;
-        private readonly IAddressRepo _address;
-        public CheckoutApiController(IOrderRepo orderRepo, IConfiguration config, IAddressRepo address)
+        private readonly IAddressRepo _addressRepo;
+        private readonly IOrderItemRepo _oRepo;
+        private readonly IUserRepo _userRepo;
+
+        public CheckoutApiController(IOrderRepo orderRepo, IConfiguration config, IAddressRepo addressRepo, IOrderItemRepo oRepo, IUserRepo userRepo)
         {
             _orderRepo = orderRepo;
             _config = config;
-            _address = address;
+            _addressRepo = addressRepo;
             StripeConfiguration.ApiKey = _config["Stripe:SecretKey"];
+            _oRepo = oRepo;
+            _userRepo = userRepo;
         }
+
         [HttpPost]
         [Route("api/create-checkout-session")]
         public ActionResult CreateCheckoutSession([FromBody] CreateCheckoutSessionRequest request)
         {
-            List<LineItemsDto> orderItems = request.OrderItems;
-            int orderId = request.OrderId;
-            string street = request.Street;
-            string city = request.City;
-            string postalCode = request.PostalCode;
+            var orderItems = request.OrderItems;
+            var orderId = request.OrderId;
+            var street = request.Street;
+            var city = request.City;
+            var postalCode = request.PostalCode;
+            var customer = request.Customer;
+
+
 
             var service = new SessionService();
 
             var options = new SessionCreateOptions
             {
-                LineItems = orderItems.Select(item => new SessionLineItemOptions
+                LineItems = request.OrderItems.Select(item => new SessionLineItemOptions
                 {
                     PriceData = new SessionLineItemPriceDataOptions
                     {
@@ -51,113 +68,106 @@ namespace BackendBookstore.Controllers
                 }).ToList(),
 
                 Mode = "payment",
-                SuccessUrl = _config["frontend_url"] + "/success",
-                CancelUrl = _config["frontend_url"] + "/cart",
+                SuccessUrl = "http://127.0.0.1:5173/success",
+                CancelUrl = "http://127.0.0.1:5173/cart",
 
-                Metadata = new Dictionary<string, string> // Add metadata here
+                Metadata = new Dictionary<string, string>
                 {
-                    { "OrderId", orderId.ToString() },
-                    { "Street", street },
-                    { "City", city },
-                    { "PostalCode", postalCode }
+                    { "orderId", orderId.ToString() },
+                    { "street", street },
+                    { "city", city },
+                    { "postalCode", postalCode },
+                    { "LineItems", JsonConvert.SerializeObject(orderItems) },
+                    { "customer", customer }
+
                 }
 
-            };
-
-
+              
+        };
+            Console.WriteLine(options.Metadata);
             Session session = service.Create(options);
 
-            return Ok(new {id = session.Id});
-
+            return Ok(new { id = session.Id });
         }
+
         const string endpointSecret = "whsec_1bd4aeca98addcd21535b54b23240342a5fa23491a109e2fbcbac3b3c32890c3";
+
+
         [HttpPost]
         [Route("webhook")]
         public async Task<IActionResult> Index()
         {
             var json = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();
-           
+            Console.WriteLine(json);
             var signatureHeader = Request.Headers["Stripe-Signature"];
 
-            // Log the Stripe-Signature header
-            Console.WriteLine($"Stripe-Signature: {signatureHeader}");
-
-            
             try
             {
                 var stripeEvent = EventUtility.ConstructEvent(json, signatureHeader, endpointSecret);
-                
-                Console.WriteLine("Received webhook event");
-                Console.WriteLine("Webhook event verified: " + stripeEvent.Type);
 
-                // Handle the event
                 if (stripeEvent.Type == Events.CheckoutSessionCompleted)
                 {
                     var session = (Stripe.Checkout.Session)stripeEvent.Data.Object;
-                    Console.WriteLine("Checkout session completed: " + session.Id);
+                    Console.WriteLine(session);
+                    // Extracting the metadata
+                    var metadata = session.Metadata;
 
-                    // Dobavljanje potrebnih informacija iz sesije
-                    int orderId = int.Parse(session.Metadata["OrderId"]);
+                    string street = metadata["street"];
+                    string city = metadata["city"];
+                    string postalCode = metadata["postalCode"];
+                    var lineItemsJson = metadata["LineItems"];
+                    var orderItems = JsonConvert.DeserializeObject<List<LineItemsDto>>(lineItemsJson);
+                    string customer = metadata["customer"];
 
-                    Address addressModel = new Address();
+                
 
-                    addressModel.Street = session.Metadata["Street"];
-                    addressModel.City = session.Metadata["City"];
-                    addressModel.PostalCode = session.Metadata["PostalCode"];
+                    var order = new Order {
+                        TotalAmount = session.AmountSubtotal / 100,
+                        Status = OrderStatus.Obrada,
+                        OrderDate = DateOnly.FromDateTime(DateTime.Now),
+                        StripeTransactionId = session.Id,
+                        UsersId = Int32.Parse(customer)
+                    };
+                    //var order = _orderRepo.FindOrderById()
+                    
 
-                    var addressId = 0;
-                    try
+                    int orderId = _orderRepo.CreateId(order);
+
+                    // Assuming you have methods to fetch the original order details using orderId
+                    var address = new Address
                     {
-                        _address.Create(addressModel);
-                        _address.SaveChanges();
+                        Street = street,
+                        City = city,
+                        PostalCode = postalCode,
+                        OrdersId = orderId
+                    };
 
-                        addressId = addressModel.AddressId;
-                    }
-                    catch (Exception ex)
+                    await _addressRepo.AddAsync(address);
+
+                    foreach (var item in orderItems)
                     {
-                        Console.WriteLine(ex);
+                        var orderItem = new Orderitem
+                        {
+                            Quantity = item.Quantity,
+                            OrdersId = orderId,
+                            BookId = item.BookId
+                        };
+                        _oRepo.Create(orderItem);
+                        // Save order item to the database
                     }
 
-                    //var existingAddress = _address.FindOrCreateAddress(address, city, postalCode);
-
-                    var order = _orderRepo.FindOrderById(orderId);
-                    if (order == null)
-                    {
-                        return NotFound();
-                    }
-                    //order.Addresses.Add(existingAddress);
-                    order.Status = OrderStatus.Obrada;
-                    //_orderRepo.SaveChanges();
-                    try
-                    {
-                        Order uplata = new Order();
-                        uplata.OrdersId = orderId;
-                        uplata.StripeTransactionId = session.PaymentIntentId;
-                        uplata.TotalAmount = session.AmountTotal / 100;
-
-                        _orderRepo.Create(uplata);
-                        _orderRepo.SaveChanges();
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine(ex);
-                    }
                     return Ok();
-                }
-                else
-                {
-                    Console.WriteLine($"Unhandled event type: {stripeEvent.Type}");
                 }
 
                 return Ok();
             }
             catch (StripeException e)
             {
-                Console.WriteLine($"Stripe exception: {e}");
                 return BadRequest();
             }
         }
     }
+
     public class CreateCheckoutSessionRequest
     {
         public List<LineItemsDto> OrderItems { get; set; }
@@ -165,7 +175,6 @@ namespace BackendBookstore.Controllers
         public string Street { get; set; }
         public string PostalCode { get; set; }
         public string City { get; set; }
-
+        public string Customer { get; set; }
     }
 }
-

@@ -1,5 +1,6 @@
 ﻿using BackendBookstore.Models;
 using BackendBookstore.Repositories.Interface;
+using Microsoft.EntityFrameworkCore;
 
 namespace BackendBookstore.Repositories.Implementation
 {
@@ -27,9 +28,13 @@ namespace BackendBookstore.Repositories.Implementation
 
         public Book FindBookById(int bookId)
         {
-            var books = _context.Books.FirstOrDefault(b => b.BookId == bookId);
-            if (books != null)
-                return books;
+            var book = _context.Books
+            .Include(b => b.Orderitems)
+            .Include(b => b.Reviews)
+            .Include(b => b.Category)
+            .FirstOrDefault(b => b.BookId == bookId);
+            if (book != null)
+                return book;
             else
                 throw new ArgumentException($"Book with ID {bookId} not found.", nameof(bookId));
         }
@@ -50,12 +55,17 @@ namespace BackendBookstore.Repositories.Implementation
 
             if (!string.IsNullOrWhiteSpace(search))
             {
-                query = query.Where(b => b.BookTitle.Contains(search) || b.BookAuthor.Contains(search) || b.Publisher.Contains(search));
+                query = query.Where(b => b.BookTitle.Contains(search) ||
+                                          b.BookAuthor.Contains(search) ||
+                                          b.Publisher.Contains(search));
             }
 
             return query.ToList();
         }
-
+        public IEnumerable<Book> GetAllBooks()
+        {
+            return _context.Books.ToList();
+        }
         public IEnumerable<Orderitem> GetOrderItemsForBook(int bookId)
         {
             return _context.Orderitems.Where(b => b.BookId == bookId).ToList();

@@ -12,6 +12,7 @@ namespace BackendBookstore.Repositories.Interface
         IEnumerable<Orderitem> GetOrderItemsForBook(int bookId);
         IEnumerable<Book> GetBooksByIds(List<int> bookIds);
         IEnumerable<Review> GetReviewsForBook(int bookId);
+        IEnumerable<Book> GetAllBooks();
         bool SaveChanges();
     }
 }

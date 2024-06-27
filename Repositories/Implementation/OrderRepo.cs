@@ -19,8 +19,19 @@ namespace BackendBookstore.Repositories.Implementation
 
             _context.Orders.Add(order);
         }
+        public int CreateId(Order order)
+        {
+            if (order == null)
+                throw new ArgumentNullException(nameof(order));
 
-        public void Delete(int ordersId)
+            _context.Orders.Add(order);
+            _context.SaveChanges(); // Sačuvaj promene u bazi
+
+            return order.OrdersId; // Vrati generisani ID
+        }
+
+
+        public async Task Delete(int ordersId)
         {
             var order = FindOrderById(ordersId);
             if (order != null)
@@ -36,6 +47,17 @@ namespace BackendBookstore.Repositories.Implementation
                 return orders;
             else
                 throw new ArgumentException($"Order with ID {ordersId} not found.", nameof(ordersId));
+        }
+
+        public async Task UpdateOrderStatusAsync(int orderId, OrderStatus status)
+        {
+            var order = await _context.Orders.FindAsync(orderId);
+            if (order != null)
+            {
+                order.Status = status;
+                _context.Orders.Update(order);
+                await _context.SaveChangesAsync();
+            }
         }
 
         public void Update(Order order)

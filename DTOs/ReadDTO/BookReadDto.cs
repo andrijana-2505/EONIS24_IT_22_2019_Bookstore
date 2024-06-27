@@ -20,6 +20,7 @@ namespace BackendBookstore.DTOs.ReadDTO
         public int Available { get; set; }
 
         public int? CategoryId { get; set; }
+        public CategoryReadDto Category { get; set; }
 
         public virtual ICollection<OrderItemUpdateDto> Orderitems { get; set; } = new List<OrderItemUpdateDto>();
 

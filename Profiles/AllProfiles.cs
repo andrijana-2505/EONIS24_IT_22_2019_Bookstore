@@ -13,20 +13,25 @@ namespace BackendBookstore.Profiles
                 CreateMap<Address, AddressCreateDto>();
                 CreateMap<AddressCreateDto, Address>();
                 CreateMap<Address, AddressReadDto>();
+                CreateMap<AddressReadDto, Address>();
                 CreateMap<Address, Address>();
                 CreateMap<Address, AddressUpdateDto>();
                 CreateMap<AddressUpdateDto, Address>();
 
                 CreateMap<Book, BookCreateDto>();
                 CreateMap<BookCreateDto, Book>();
-                CreateMap<Book, BookReadDto>();
+                CreateMap<Book, BookReadDto>()
+                    .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.Category))
+                    .ReverseMap();
                 CreateMap<Book, Book>();
+                CreateMap<BookReadDto, Book>();
                 CreateMap<Book, BookUpdateDto>();
                 CreateMap<BookUpdateDto, Book>();
 
                 CreateMap<Category, CategoryCreateDto>();
                 CreateMap<CategoryCreateDto, Category>();
                 CreateMap<Category, CategoryReadDto>();
+                CreateMap<CategoryReadDto, Category>();
                 CreateMap<Category, Category>();
                 CreateMap<Category, CategoryUpdateDto>();
                 CreateMap<CategoryUpdateDto, Category>();
@@ -34,6 +39,7 @@ namespace BackendBookstore.Profiles
                 CreateMap<Orderitem, OrderItemCreateDto>();
                 CreateMap<OrderItemCreateDto, Orderitem>();
                 CreateMap<Orderitem, OrderItemReadDto>();
+                CreateMap<OrderItemReadDto, Orderitem>();
                 CreateMap<Orderitem, Orderitem>();
                 CreateMap<Orderitem, OrderItemUpdateDto>();
                 CreateMap<OrderItemUpdateDto, Orderitem>();
@@ -50,6 +56,7 @@ namespace BackendBookstore.Profiles
                 CreateMap<ReviewCreateDto, Review>();
                 CreateMap<Review, ReviewReadDto>();
                 CreateMap<Review, Review>();
+                CreateMap<ReviewReadDto, Review>();
                 CreateMap<Review, ReviewUpdateDto>();
                 CreateMap<ReviewUpdateDto, Review>();
 
@@ -57,6 +64,7 @@ namespace BackendBookstore.Profiles
                 CreateMap<UserCreateDto, User>();
                 CreateMap<User, UserReadDto>();
                 CreateMap<User, User>();
+                CreateMap<UserReadDto, User>();
                 CreateMap<UserUpdateDto, User>();
                 CreateMap<User, UserUpdateDto>();
                 CreateMap<User, UserReadDto2>();

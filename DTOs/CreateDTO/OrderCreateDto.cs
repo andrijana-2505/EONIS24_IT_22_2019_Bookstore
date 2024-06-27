@@ -1,4 +1,6 @@
-﻿namespace BackendBookstore.DTOs.CreateDTO
+﻿using BackendBookstore.Models;
+
+namespace BackendBookstore.DTOs.CreateDTO
 {
     public class OrderCreateDto
     {

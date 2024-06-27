@@ -41,7 +41,7 @@ namespace BackendBookstore.Controllers
         }
         [Authorize(Roles = "Admin")]
         [HttpGet("{orderId}", Name = "GetOrderById")]
-        public ActionResult<OrderReadDto> GetOrderById(int orderId)
+        public async Task<ActionResult<OrderReadDto>> GetOrderById(int orderId)
         {
 
             Order order = _repository.FindOrderById(orderId);
@@ -58,7 +58,7 @@ namespace BackendBookstore.Controllers
 
         [Authorize(Roles = "Admin, Customer")]
         [HttpPost]
-        public ActionResult<OrderReadDto> CreateOrder(OrderCreateDto order)
+        public async Task<ActionResult<OrderReadDto>> CreateOrder(OrderCreateDto order)
         {
             var user = _user.FindByEmail(User?.Identity?.Name);
             order.UsersId = user.UsersId;
@@ -112,9 +112,11 @@ namespace BackendBookstore.Controllers
             }
         }
 
+
+
         [Authorize(Roles = "Admin")]
         [HttpDelete("{orderId}")]
-        public IActionResult Delete(int orderId)
+        public async Task<IActionResult> Delete(int orderId)
         {
             try
             {
@@ -123,7 +125,7 @@ namespace BackendBookstore.Controllers
                 {
                     return NotFound();
                 }
-                _repository.Delete(orderId);
+                await _repository.Delete(orderId);
                 _repository.SaveChanges();
                 return NoContent();
             }

@@ -59,5 +59,10 @@ namespace BackendBookstore.Repositories.Implementation
                            .Where(o => o.Addresses.Any(a => a.AddressId == addressId))
                            .ToList();
         }
+
+        public async Task AddAsync(Address address)
+        {
+            await _context.Addresses.AddAsync(address);
+        }
     }
 }

@@ -20,12 +20,14 @@ namespace BackendBookstore.Controllers
     {
         private readonly IMapper _mapper;
         private readonly IBookRepo _repository;
+        private readonly ICategoryRepo _categoryRepo;
         private readonly IWebHostEnvironment _env;
 
-        public BookController(IMapper mapper, IBookRepo repository, IWebHostEnvironment env)
+        public BookController(IMapper mapper, IBookRepo repository, ICategoryRepo categoryRepo, IWebHostEnvironment env)
         {
             _mapper = mapper;
             _repository = repository;
+            _categoryRepo = categoryRepo;
             _env = env;
         }
 
@@ -69,13 +71,17 @@ namespace BackendBookstore.Controllers
             Book book = _repository.FindBookById(bookId);
             if (book != null)
             {
-                var order = _mapper.Map<IEnumerable<OrderItemUpdateDto>>(book.Orderitems);
+                // Mapiranje Orderitems i Reviews
+                var orderItems = _mapper.Map<IEnumerable<OrderItemUpdateDto>>(book.Orderitems);
+                var reviews = _mapper.Map<IEnumerable<ReviewUpdateDto>>(book.Reviews);
+
                 var bookDto = _mapper.Map<BookReadDto>(book);
-                bookDto.Orderitems = order.ToList();
+                bookDto.Orderitems = orderItems.ToList();
+                bookDto.Reviews = reviews.ToList();
+
                 return Ok(bookDto);
             }
             return NotFound();
-
         }
 
         [AllowAnonymous]
@@ -93,6 +99,27 @@ namespace BackendBookstore.Controllers
 
             return NotFound();
         }
+
+        [AllowAnonymous]
+        [HttpGet("search", Name = "SearchBooks")]
+        public ActionResult<IEnumerable<BookReadDto>> SearchBooks(int? categoryId, string query)
+        {
+            Console.WriteLine($"Searching for books with query '{query}' in category '{categoryId}'");
+
+            var books = _repository.GetBooks(categoryId, query);
+
+            if (!books.Any())
+            {
+                return NotFound("No books found matching the criteria.");
+            }
+
+            var bookReadDtos = _mapper.Map<IEnumerable<BookReadDto>>(books);
+
+            Console.WriteLine($"Found {bookReadDtos.Count()} books matching the search criteria");
+
+            return Ok(bookReadDtos);
+        }
+
         [Authorize(Roles = "Admin")]
         [HttpPost()]
         public async Task<ActionResult<BookReadDto>> CreateBook(BookCreateDto book)

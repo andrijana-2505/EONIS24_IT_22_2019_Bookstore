@@ -29,11 +29,9 @@ namespace BackendBookstore.Repositories.Implementation
 
         public User FindByEmail(string email)
         {
-            var user = _context.Users.FirstOrDefault(u => u.Email == email);
-           
-            return user;
-
+            return _context.Users.SingleOrDefault(u => u.Email == email);
         }
+
 
         public User FindUserById(int userId)
         {

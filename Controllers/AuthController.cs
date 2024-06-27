@@ -82,9 +82,10 @@ namespace BackendBookstore.Controllers
         private string CreateToken(User user)
         {
             //Kreiranje liste claimova za token
-            List<Claim> claims = new List<Claim>
+            var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.Name, user.Email),
+                new Claim(JwtRegisteredClaimNames.Email, user.Email), // Dodavanje email tvrđenja
+                new Claim(ClaimTypes.Email, user.Email),
                 new Claim(ClaimTypes.Role, Enum.GetName(typeof(UserRole), user.UserRole))
             };
 

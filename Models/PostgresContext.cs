@@ -125,7 +125,7 @@ public partial class PostgresContext : DbContext
                 .HasConversion<string>()
                 .HasColumnName("status");
             entity.Property(e => e.StripeTransactionId)
-                .HasMaxLength(30)
+                .HasMaxLength(300)
                 .HasColumnName("stripe_transaction_id");
             entity.Property(e => e.TotalAmount)
                 .HasPrecision(10, 2)

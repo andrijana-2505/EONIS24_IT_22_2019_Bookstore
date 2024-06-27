@@ -11,6 +11,6 @@ namespace BackendBookstore.Repositories.Interface
         IEnumerable<Address> GetAddresses();
         bool SaveChanges();
         IEnumerable<Order> GetOrdersForAddress(int addressId);
-
+        Task AddAsync(Address address);
     }
 }

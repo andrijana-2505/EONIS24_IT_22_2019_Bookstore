@@ -22,9 +22,10 @@ namespace BackendBookstore.Repositories.Implementation
         {
             if (orderitem == null)
                 return;
-            if (orderitem.Quantity > _repo.FindBookById((int)orderitem.BookId).Available)
-                return;
+           // if (orderitem.Quantity > _repo.FindBookById((int)orderitem.BookId).Available)
+               // return;
             _context.Orderitems.Add(orderitem);
+            _context.SaveChanges();
         }
 
         public void Delete(int orderitemId)
