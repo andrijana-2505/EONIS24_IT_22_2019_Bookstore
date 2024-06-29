@@ -1,4 +1,5 @@
-import OrderItem from './OrderItem';
+import { Category } from './Category';
+import OrderItem from './Orderitem';
 import Review from './Review';
 
 interface Book {
@@ -10,6 +11,7 @@ interface Book {
   bookPrice: number;
   available: number;
   categoryId: null | number;
+  category: Category | null;
   orderitems: OrderItem[];
   reviews: Review[];
 }

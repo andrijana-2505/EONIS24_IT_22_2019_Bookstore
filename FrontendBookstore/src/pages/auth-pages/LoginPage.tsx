@@ -25,7 +25,7 @@ const LoginPage = () => {
     return () => {
       clearError();
     };
-  }, [isAuthenticated]);
+  }, [isAuthenticated, navigate, clearError]);
 
   const handleLoginInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -54,7 +54,27 @@ const LoginPage = () => {
     if (validateLoginForm(loginFormData)) {
       const success = await login(loginFormData.email, loginFormData.password);
       if (success) {
-        console.log('success');
+        const token = localStorage.getItem('token');
+        if (token) {
+          const tokenParts = token.split('.');
+          if (tokenParts.length === 3) {
+            const decodedToken = JSON.parse(atob(tokenParts[1]));
+            console.log('Decoded Token:', decodedToken);
+
+            if (decodedToken.email) {
+              console.log('Korisnikova email adresa:', decodedToken.email);
+              // Poslati email adresu backend-u da se pronadje userId i sacuva u bazi
+              // Primer:
+              // await saveUserId(decodedToken.email);
+            } else {
+              console.error('Email adresa nije pronađena u JWT token-u.');
+            }
+          } else {
+            console.error('Neispravan format JWT tokena.');
+          }
+        } else {
+          console.error('JWT token nije pronađen u localStorage-u.');
+        }
 
         navigate('/');
         alert('User logged in successfully');

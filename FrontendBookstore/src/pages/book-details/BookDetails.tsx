@@ -11,7 +11,6 @@ import BookReview from "../../components/book-review/BookReview.tsx";
 import { v4 as uuidv4 } from 'uuid';
 
 
-// TODO backend issue -> not getting reviews
 const BookDetails = () => {
     const {bookId} = useParams();
     const [bookData, setBookData] = useState<Book | null>(null);
@@ -33,8 +32,6 @@ const BookDetails = () => {
         setError(''); // Clear previous error
         setLoading(true);
         try {
-            // ! error on backend side
-            // ! not returning reviews on this specific request
             const response = await axios.get(`${baseUrl}/api/Book/id/${bookId}`);
             setBookData(response.data);
             console.log(response.data);
@@ -44,6 +41,7 @@ const BookDetails = () => {
             setLoading(false);
         }
     };
+
     const handleAddToCart = () => {
         if (!isAuthenticated) {
 
@@ -74,7 +72,7 @@ const BookDetails = () => {
         setLoading(true);
         try {
             const review: Review = {
-                reviewDate: new Date().toISOString().split('T')[0], // Change this line
+                reviewDate: new Date().toISOString().split('T')[0], 
                 usersId: Number(userData?.usersId),
                 bookId: Number(bookId),
                 rating: reviewRating,
@@ -121,6 +119,7 @@ const BookDetails = () => {
                     <p>
                         Publisher: {bookData?.publisher} - {bookData?.publishingYear}
                     </p>
+                    <p>Category: {bookData?.category?.categoryName}</p>
                     <p>Available copies: {bookData?.available}</p>
 
                     <label htmlFor='quantity'>Quantity:</label>

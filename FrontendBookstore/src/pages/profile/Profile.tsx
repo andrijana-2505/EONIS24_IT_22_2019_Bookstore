@@ -1,85 +1,66 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import Order from '../../components/order/Order';
 import UserReview from '../../components/user-review/UserReview.tsx';
 import {UserReadDto} from '../../dto/user/UserReadDto';
 import useAuth from '../../hooks/useAuth';
+import OrderStatus from '../../model/OrderStatus.ts';
 import './Profile.css';
 
-// TODO backend issue -> user not getting reviews and orders
+
 const Profile = () => {
-  const { userData, userToken } = useAuth();
-  const [userDetails, setUserDetails] = useState<UserReadDto | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const { userData } = useAuth();
 
-  const baseUrl = import.meta.env.VITE_BASE_URL;
+  // Assume userData is of type UserReadDto and is not null
+  const user: UserReadDto = userData!;
 
-  useEffect(() => {
-    const fetchUserDetails = async () => {
-      setError(''); // Clear previous error
-      setLoading(true);
-      try {
-        const response = await axios.get(`${baseUrl}/api/User/details`, {
-          headers: {
-            Authorization: `Bearer ${userToken?.token}`,
-          },
-        });
+  const getOrderStatusString = (status: OrderStatus) => {
+    switch (status) {
+        case OrderStatus.Obrada:
+            return "Obrada";
+        case OrderStatus.Isporuka:
+            return "Isporuka";
+        case OrderStatus.Završeno:
+            return "Završeno";
+        case OrderStatus.Odbijeno:
+            return "Odbijeno";
+        case OrderStatus.U_procesu:
+            return "U_procesu";
 
-        setUserDetails(response.data);
-        console.log(response.data); // Check the data structure
-        setLoading(false);
-      } catch (error) {
-        setError(error.response?.data?.message || 'Failed to fetch user details');
-        setLoading(false);
-      }
-    };
-
-    fetchUserDetails();
-  }, [baseUrl, userToken]);
-
-  if (loading) {
-    return <div className='loading-message'>Loading....</div>;
-  }
-
-  if (error) {
-    return <div className='error-message'>{error}</div>;
-  }
-
-  if (!userDetails) {
-    return <div className='error-message'>Failed to load user details</div>;
-  }
+    }
+};
   return (
     <div className='profile'>
       <div className='profile__profile-card'>
         <div className='profile__profile-card__profile-info'>
           <h2>Profile Information</h2>
           <span>
-            <strong>Email:</strong> {userDetails.email}
+            <strong>Email:</strong> {user.email}
           </span>
           <span>
-            <strong>Username:</strong> {userDetails.username}
+            <strong>Username:</strong> {user.username}
           </span>
           <span>
-            <strong>First Name:</strong> {userDetails.firstName}
+            <strong>First Name:</strong> {user.firstName}
           </span>
           <span>
-            <strong>Last Name:</strong> {userDetails.lastName}
+            <strong>Last Name:</strong> {user.lastName}
           </span>
           <span>
-            <strong>Phone:</strong> {userDetails.phone}
+            <strong>Phone:</strong> {user.phone}
           </span>
           <span>
-            <strong>Genre:</strong> {userDetails.genre}
+            <strong>Genre:</strong> {user.genre}
           </span>
         </div>
       </div>
       <div className='profile__user-data'>
         <div className='profile__user-data_orders'>
           <h3>Orders</h3>
-          {userDetails.orders && userDetails.orders.length > 0 ? (
-            userDetails.orders.map((order) => (
-              <Order key={order.ordersId} order={order} />
+          {user.orders && user.orders.length > 0 ? (
+            user.orders.map((order) => (
+              <div key={order.ordersId} className="order-details">
+                <p>Order ID: {order.ordersId}</p>
+                <p>Total Amount: {order.totalAmount}</p>
+                <p>Status: {getOrderStatusString(order.status as OrderStatus)}</p>
+              </div>
             ))
           ) : (
             <p>No orders</p>
@@ -87,8 +68,8 @@ const Profile = () => {
         </div>
         <div className='profile__user-data_review'>
           <h3>Reviews</h3>
-          {userDetails.reviews && userDetails.reviews.length > 0 ? (
-            userDetails.reviews.map((review) => (
+          {user.reviews && user.reviews.length > 0 ? (
+            user.reviews.map((review) => (
               <UserReview key={review.reviewId} review={review} />
             ))
           ) : (

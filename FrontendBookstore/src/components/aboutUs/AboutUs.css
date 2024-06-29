@@ -1,0 +1,29 @@
+.about-us {
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    height: 100vh; /* Postavite visinu na cijelu visinu ekrana */
+    display: flex;
+    justify-content: center; /* Centrirajte horizontalno */
+    align-items: center; /* Centrirajte vertikalno */
+    text-align: center; /* Centrirajte tekst unutar kontejnera */
+    color: white; /* Boja teksta */
+    font-size: 24px; /* Veličina fonta */
+    padding: 0 20px; /* Ograničenje prostora za tekst */
+  }
+  
+  .about-us__content {
+    background-color: rgba(0, 0, 0, 0.5); /* Dodatni sloj za transparentnost */
+    padding: 20px; /* Prostor za unutarnji sadržaj */
+    border-radius: 10px; /* Zaobljeni rubovi */
+  }
+  
+  .about-us h2 {
+    font-size: 2.5rem;
+  }
+  
+  .about-us p {
+    font-size: 1.2rem;
+    line-height: 1.6;
+  }
+  

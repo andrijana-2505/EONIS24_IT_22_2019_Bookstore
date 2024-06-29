@@ -48,7 +48,7 @@ export const AuthProvider = ({ children }: React.PropsWithChildren) => {
         setLoading(true);
         try {
           const response = await axios.get(
-            'http://localhost:5137/api/User/id/${userId}',
+            'http://localhost:5137/api/User/my-data',
             {
               headers: {
                 Authorization: `Bearer ${userToken.token}`,

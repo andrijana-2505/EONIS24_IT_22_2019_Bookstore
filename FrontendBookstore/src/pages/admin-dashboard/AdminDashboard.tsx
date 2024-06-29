@@ -19,6 +19,8 @@ const AdminDashboard = () => {
         <Link to='/'>Back to home page</Link>
         <Link to='/admin-dashboard'>Category Operations</Link>
         <Link to='/admin-dashboard/book-operations'>Book Operations</Link>
+        <Link to='/admin-dashboard/order-history'>Orders database</Link>
+        <Link to='/admin-dashboard/users-list'>List of users</Link>
       </div>
       <div className='admin-dashboard__content'>
         <Outlet />

@@ -6,4 +6,5 @@ export interface StripeRequestDto {
   street: string;
   postalCode: string;
   city: string;
+  customer: string;
 }

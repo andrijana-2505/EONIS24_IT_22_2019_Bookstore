@@ -1,4 +1,4 @@
-import { createContext, useState } from 'react';
+import { createContext, useState, useEffect } from 'react';
 import { CartItem } from '../model/CartItem';
 
 interface CartContextProps {
@@ -17,6 +17,9 @@ export const CartProvider = ({ children }: React.PropsWithChildren) => {
   const addCartItem = (item: CartItem) => {
     setCartItems((prevItems) => [...prevItems, item]);
   };
+  useEffect(() => {
+    localStorage.setItem('cartItems', JSON.stringify(cartItems));
+  }, [cartItems]);
 
   const removeCartItem = (id: number) => {
     setCartItems((prevItems) =>

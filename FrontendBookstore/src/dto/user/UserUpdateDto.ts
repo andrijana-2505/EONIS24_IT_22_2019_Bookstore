@@ -1,6 +1,8 @@
+import UserRole from "../../model/UserRole";
+
 export interface UserUpdateDto {
   usersId: number;
-  userRole: string; // or an enum if you have defined one
+  userRole: UserRole; // or an enum if you have defined one
   username: string;
   firstName: string;
   lastName: string;

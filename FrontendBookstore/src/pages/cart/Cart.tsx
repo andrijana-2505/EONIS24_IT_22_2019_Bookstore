@@ -4,11 +4,11 @@ import {StripeRequestDto} from '../../dto/StripeRequestDto';
 import useCart from '../../hooks/useCart';
 import './Cart.css';
 import React, {useState} from "react";
+import useAuth from '../../hooks/useAuth';
 
 const Cart = () => {
     const {cartItems, removeCartItem} = useCart();
     console.log(cartItems);
-
     const [street, setStreet] = useState('')
     const [postalCode, setPostalCode] = useState('')
     const [city, setCity] = useState('')
@@ -17,26 +17,30 @@ const Cart = () => {
         'pk_test_51PO3zKRshBAKvgM053XkLxJwKMG620oywnDThYnRdbnzKwSSnIwU88OdUmKIivQTnDCwaKb730ZSRwGrfk9Ht7l200rch4aHdz';
     const stripePromise = loadStripe(stripe_public_key);
 
+    var customer = useAuth().userData?.usersId;
+
     const handleCheckout = async () => {
         const stripeRequestDto: StripeRequestDto = {
             orderItems: cartItems.map((item) => ({
                 name: item.book.bookTitle,
                 unitAmount: parseInt(String(item.book.bookPrice), 10), // Convert to cents
                 quantity: item.quantity,
+                bookId: item.book.bookId
             })),
             orderId: 1,
             street: street,
             postalCode: postalCode,
             city: city,
+            customer: customer!.toString()
         };
-
         try {
+            
             const response = await axios.post(
                 'http://localhost:5137/api/create-checkout-session',
                 stripeRequestDto,
                 {
                     headers: {
-                        'Content-Type': 'application/json',
+                        'Content-Type': 'application/json'
                     },
                 }
             );

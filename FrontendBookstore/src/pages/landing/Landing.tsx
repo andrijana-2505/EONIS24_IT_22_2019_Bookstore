@@ -1,5 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import './Landing.css';
+import BooksSearch from '../books/BooksSearch';
+
 const Landing = () => {
   const navigate = useNavigate();
 
@@ -13,8 +15,7 @@ const Landing = () => {
           We offer access to a growing library of over 7000 free books
         </span>
         <div className='landing-page-search'>
-          <input type='text' placeholder='Search' />
-          <div className='search-btn'>Search</div>
+          <BooksSearch />
         </div>
         <span className='landing-page__left-section__section-text small'>
           Join our community and start reading today!{' '}

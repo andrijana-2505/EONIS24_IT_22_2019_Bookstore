@@ -1,8 +1,10 @@
+import OrderStatus from "../../model/OrderStatus";
+
 export interface OrderUpdateDto {
-  ordersId?: number;
+  ordersId: number;
   totalAmount?: number;
-  status?: string;
-  orderData?: Date;
+  status?: OrderStatus;
+  orderDate?: string;
   stripeTransactionId?: string;
   usersId?: number;
 }

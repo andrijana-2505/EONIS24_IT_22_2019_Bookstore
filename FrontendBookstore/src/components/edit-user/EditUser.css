@@ -1,0 +1,65 @@
+.edit-user-form {
+  max-width: 600px; /* Povećan maksimalni širina */
+  margin: 50px auto; /* Centriranje sa dodatnim razmakom na vrhu */
+  padding: 30px; /* Veće padding */
+  background-color: #ffffff; /* Promenjena pozadinska boja */
+  border: 1px solid #ddd; /* Svetlija boja ivice */
+  border-radius: 10px; /* Veći radijus za zaobljene ivice */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Dodavanje blagih senki */
+}
+
+.edit-user-form h2 {
+  text-align: center;
+  margin-bottom: 30px; /* Veći razmak ispod naslova */
+  color: #333; /* Tamnija boja teksta */
+  font-size: 24px; /* Veći font naslova */
+  font-weight: 600; /* Podebljan tekst naslova */
+}
+
+.edit-user-form .form-group {
+  margin-bottom: 20px; /* Veći razmak između grupa */
+}
+
+.edit-user-form label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 8px; /* Dodavanje razmaka ispod labela */
+  color: #555; /* Tamnija boja labela */
+}
+
+.edit-user-form input[type="text"],
+.edit-user-form input[type="email"],
+.edit-user-form select {
+  width: 100%;
+  padding: 12px; /* Veći padding */
+  font-size: 18px; /* Veći font */
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box; /* Box model koji uključuje padding u širinu */
+  margin-top: 5px; /* Dodavanje razmaka iznad input polja */
+}
+
+.edit-user-form button[type="submit"] {
+  width: 100%;
+  padding: 15px; /* Veći padding */
+  background-color: #007bff; /* Promenjena boja dugmeta */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 18px; /* Veći font dugmeta */
+  font-weight: bold; /* Podebljan tekst dugmeta */
+  transition: background-color 0.3s ease; /* Dodavanje animacije pri prelasku */
+}
+
+.edit-user-form button[type="submit"]:hover {
+  background-color: #0056b3; /* Tamnija boja pri prelasku */
+}
+
+.error-message {
+  color: #f44336;
+  font-size: 14px;
+  margin-top: 5px;
+  text-align: center; /* Centriranje grešaka */
+}
+

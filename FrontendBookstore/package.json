@@ -15,9 +15,11 @@
     "@tabler/icons-react": "^3.5.0",
     "@types/uuid": "^9.0.8",
     "axios": "^1.7.2",
+    "jwt-decode": "^4.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.23.1",
+    "react-scripts": "^5.0.1",
     "uuid": "^10.0.0"
   },
   "devDependencies": {
