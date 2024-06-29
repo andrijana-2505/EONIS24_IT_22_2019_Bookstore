@@ -14,16 +14,12 @@ namespace BackendBookstore.Repositories.Implementation
         {
             _context = context;
             _repo = repo;
-
-
         }
 
         public void Create(Orderitem orderitem)
         {
             if (orderitem == null)
                 return;
-           // if (orderitem.Quantity > _repo.FindBookById((int)orderitem.BookId).Available)
-               // return;
             _context.Orderitems.Add(orderitem);
             _context.SaveChanges();
         }

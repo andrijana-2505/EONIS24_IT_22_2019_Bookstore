@@ -49,17 +49,6 @@ namespace BackendBookstore.Repositories.Implementation
                 throw new ArgumentException($"Order with ID {ordersId} not found.", nameof(ordersId));
         }
 
-        public async Task UpdateOrderStatusAsync(int orderId, OrderStatus status)
-        {
-            var order = await _context.Orders.FindAsync(orderId);
-            if (order != null)
-            {
-                order.Status = status;
-                _context.Orders.Update(order);
-                await _context.SaveChangesAsync();
-            }
-        }
-
         public void Update(Order order)
         {
         }
